@@ -1,0 +1,30 @@
+############################################################ 
+CLAMP_RESULT_ON_DISCHAREGE_SUMMARIES: DISSUM_ALL_Diseases
+ ############################################################
+Number of patients: 41118
+Number of episodes: 52713
+Number of CUI: 23740
+Number of records: 3321644
+
+CUI codes from diag_matrix.csv
+Number of CUI: 6828
+Number of Intersection of CUI,             the percentage on diag_matrix.csv: 22.67%
+
+CUI codes from allepis_newCUI.csv
+Number of CUI: 13239
+Number of Intersection of CUI,             the percentage on allepis_newCUI.csv: 100.00%
+############################################################ 
+CLAMP_RESULT_ON_DISCHAREGE_SUMMARIES: DISSUM_ALL_Drugs
+ ############################################################
+Number of patients: 40896
+Number of episodes: 52471
+Number of RxNorm: 17881
+Number of records: 1944178
+
+RxNorm codes from pres_rxnorm_matrix.csv
+Number of RxNorm: 1624
+Number of Intersection of RxNorm,             the percentage on pres_rxnorm_matrix.csv: 54.50%
+
+RxNorm codes from allepis_newRxNorm.csv
+Number of RxNorm: 4930
+Number of Intersection of RxNorm,             the percentage on allepis_newRxNorm.csv: 100.00%
