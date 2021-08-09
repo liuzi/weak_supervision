@@ -5,8 +5,9 @@ import json
 import shutil
 from pathlib import Path
 from csv import writer
+import pickle
 
-def csv_suffix(file_path,suffix = '.csv'):
+def file_suffix(file_path,suffix = '.csv'):
     if('.' in file_path):
         final_file_path=file_path
     else:
@@ -14,7 +15,7 @@ def csv_suffix(file_path,suffix = '.csv'):
     return final_file_path
 
 def read_data(file_path, dtype=None, usecols=None, sep=',', header = 'infer', suffix = '.csv', pre=''):
-    return pd.read_csv(csv_suffix(file_path), dtype=dtype, usecols=usecols,sep=sep, header = header, encoding='latin1')
+    return pd.read_csv(file_suffix(file_path), dtype=dtype, usecols=usecols,sep=sep, header = header, encoding='latin1')
 
 def write2txt(string, file_path):
     textfile = open("%s.txt"%file_path, 'w')
@@ -49,14 +50,14 @@ def create_folder_overwrite(file_path):
     os.makedirs(file_path)
 
 def write2file(df, file_path):
-    df.to_csv(csv_suffix(file_path), index=False)
+    df.to_csv(file_suffix(file_path), index=False)
 
 def write2file_nooverwrite(df, file_path):
-    if os.path.exists((csv_suffix(file_path))):
-        print("%s already exists."%csv_suffix(file_path))
+    if os.path.exists((file_suffix(file_path))):
+        print("%s already exists."%file_suffix(file_path))
     else:
-        df.to_csv(csv_suffix(file_path), index=False)
-        print("%s is successfully saved."%csv_suffix(file_path))
+        df.to_csv(file_suffix(file_path), index=False)
+        print("%s is successfully saved."%file_suffix(file_path))
 
 
 def left_join(left_df, right_df, joined_field):
@@ -76,7 +77,7 @@ def print_patient_stats(df):
 def append_csv_byrow(row, file_name,sep="\t"):
     # NOTE: row:[]
     # Open file in append mode
-    with open(csv_suffix(file_name), 'a+', newline='') as write_obj:
+    with open(file_suffix(file_name), 'a+', newline='') as write_obj:
         # Create a writer object from csv module
         csv_writer = writer(write_obj,delimiter=sep )
         # Add contents of list as last row in the csv file
@@ -88,7 +89,20 @@ def append_csv_byrow(row, file_name,sep="\t"):
 def append_csv_bydf(df, file_name, sep="\t"):
     
     # Open file in append mode
-    with open(csv_suffix(file_name), 'a') as write_obj:
+    with open(file_suffix(file_name), 'a') as write_obj:
         df.to_csv(write_obj, mode='a', header=write_obj.tell()==0,sep=sep,index=False)
         print("Insert %d rows into file %s"%(
             df.shape[0],file_name))
+
+def append_tsv_bydf(df, file_name, sep="\t"):
+    # Open file in append mode
+    with open(file_suffix(file_name,suffix='.tsv'), 'a') as write_obj:
+        df.to_csv(write_obj, mode='a', header=write_obj.tell()==0,sep=sep,index=False)
+        print("Insert %d rows into file %s"%(
+            df.shape[0],file_name))
+
+
+def write_pickles(model, path_filename):
+    # save model as pickle file
+    with open(path_filename, 'wb') as file :  
+        pickle.dump(model, file)
