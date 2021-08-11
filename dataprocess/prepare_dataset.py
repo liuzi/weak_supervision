@@ -14,6 +14,8 @@ from nltk.stem import LancasterStemmer
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 
+import sys
+sys.path.insert(1,'../utils')
 from utils import *
 
 data_path='../N2C2'

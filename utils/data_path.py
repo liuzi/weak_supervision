@@ -15,3 +15,4 @@ concat_clamp_prefix="/data/liu/mimic3/CLAMP_NER/ner-attribute/output/CONCAT_Resu
 term_path="/data/liu/mimic3/MAPPING/TERMINOLOGIES"
 dis_sider_intersection_path="/data/liu/mimic3/CLAMP_NER/single_drug_analysis/CONCAT_RESULTS/DISEASE_SIDER_INTERSECTION"
 product_ndc_file_path_prefix='/data/liu/mimic3/MAPPING/RAR/ndctext'
+n2c2_data_prefix="/data/liu/mimic3/N2C2"

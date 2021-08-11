@@ -49,8 +49,8 @@ def create_folder_overwrite(file_path):
         shutil.rmtree(file_path)
     os.makedirs(file_path)
 
-def write2file(df, file_path):
-    df.to_csv(file_suffix(file_path), index=False)
+def write2file(df,file_path,sep=','):
+    df.to_csv(file_path, index=False,sep=sep)
 
 def write2file_nooverwrite(df, file_path):
     if os.path.exists((file_suffix(file_path))):
@@ -68,8 +68,7 @@ def inner_join(left_df, right_df, joined_field):
 
 def print_patient_stats(df):
     
-    print("# of rows: %d"%len(df))
-    
+    print("# of rows: %d"%len(df))   
     for col in df.columns:
         print("# of %s: %d"%(col,len(df[col].unique())))
         # print("# of %s: %d"%len(df['HADM_ID'].unique()))
