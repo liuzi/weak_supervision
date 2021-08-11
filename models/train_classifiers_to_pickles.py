@@ -20,6 +20,7 @@ from pathlib import Path
 import sys
 root_dir = os.path.dirname(os.path.abspath(Path(__file__).parent)) #project root dir
 sys.path.insert(0, join(root_dir,"utils"))
+sys.path.insert(0, join(root_dir,"dataprocess"))
 from tools import create_folder, append_tsv_bydf, write_pickles
 from prepare_dataset import prepare_data_for_model
 

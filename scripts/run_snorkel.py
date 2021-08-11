@@ -23,9 +23,20 @@ sys.path.insert(1, '../utils')
 from tools import append_csv_bydf, create_folder
 
 sys.path.insert(1, '../models')
-from pretrained_label_functions import *
+sys.path.insert(1, '../dataprocess')
+# from pretrained_label_functions import *
+from pretrained_label_functions import get_model_lfs
 from prepare_dataset import prepare_data_for_model
 from utils import *
+
+model_lfs = get_model_lfs()
+for lf in model_lfs:
+    print(lf.name)
+quit()
+
+# from inspect import getmembers, isfunction
+# print(getmembers(pretrained_label_functions))
+# quit()
 
 lf_models=[lf_model_svm_linear, lf_model_svm_poly,
     lf_model_svm_rbf, lf_model_svm_sigmoid, lf_model_rfc]
@@ -65,10 +76,7 @@ def main():
     # info = pd.DataFrame({'models': [args.models], 'rules': [args.rules]})
     # info.to_csv(join(result_folder_path, 'args_info.csv'), index=False)
 
-    lfs= []
 
-    # FIXME: PUT CLASSIFIER AT THE END
-    # get models #
     print("models selected:")
     model_list = [
         # lf_models[0],
