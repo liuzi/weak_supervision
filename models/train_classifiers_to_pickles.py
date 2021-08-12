@@ -25,56 +25,6 @@ from tools import create_folder, append_tsv_bydf, write_pickles
 from prepare_dataset import prepare_data_for_model
 
 
-# FIXME:
-def run_RFC_model(pickle_path = "rfc_pickles"):
-    create_folder(pickle_path)
-    '''
-        RANDOM FOREST
-    '''
-    print("#####################")
-    print("### Random Forest ###")
-    print("#####################")
-    # Create a svm classifier
-    clf = RandomForestClassifier(max_depth=5, \
-        n_estimators=10, max_features=1, class_weight='balanced')
-    # Train the model using training sets
-    clf.fit(tfidf_train_data, train_labels)
-    # Predict the response for test dataset
-    y_pred = clf.predict(tfidf_test_data)
-
-    metrics_names=list(map(lambda x: "Random Forest %s"%(x), metrics_names))
-    for name, func in zip(metrics_names,funcs):
-        print(name, func(test_labels, y_pred))
-    # save model as pickle file
-    filename = '%s.pkl'%"rfc"
-    with open(join(pickle_path,filename), 'wb') as file :  
-        pickle.dump(clf, file)
-    print("Random Forest model saved")
-
-def run_svm_model(pickle_path = "svm_pickles"):
-    create_folder(pickle_path)
-    kernel_list=['linear','poly','sigmoid','rbf']
-    for kernel in kernel_list:
-        print("###################")
-        print("### SVM: %s ###"%kernel)
-        print("###################")
-        # Create a svm classifier
-        clf = svm.SVC(kernel=kernel)
-        # Train the model using training sets
-        clf.fit(tfidf_train_data, train_labels)
-        # Predict the response for test dataset
-        y_pred = clf.predict(tfidf_test_data)
-
-        model_metrics_names=list(map(lambda x: "%s SVM %s"%(kernel, x), metrics_names))
-
-        for name, func in zip(model_metrics_names,funcs):
-            print(name, func(test_labels, y_pred))
-
-        # save model as pickle file
-        filename = 'svm_%s.pkl'%kernel
-        with open(join(pickle_path,filename), 'wb') as file :  
-            pickle.dump(clf, file)
-        print("%s SVM model saved"%kernel)
 
 training_log_path = join("term_output","classifier_training_log.tsv")
 def save_performance_tologfile(model_name, model_metrics, params_list):
