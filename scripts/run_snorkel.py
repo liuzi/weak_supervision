@@ -21,90 +21,44 @@ from snorkel.labeling import LFAnalysis
 
 sys.path.insert(1, '../utils')
 from tools import append_csv_bydf, create_folder
-
-sys.path.insert(1, '../models')
-sys.path.insert(1, '../dataprocess')
-# from pretrained_label_functions import *
-from pretrained_label_functions import get_model_lfs
-from prepare_dataset import prepare_data_for_model
 from utils import *
 
-model_lfs = get_model_lfs()
-for lf in model_lfs:
-    print(lf.name)
-quit()
+sys.path.insert(1, '../models')
+from pretrained_label_functions import get_model_lfs
 
-# from inspect import getmembers, isfunction
-# print(getmembers(pretrained_label_functions))
-# quit()
+sys.path.insert(1, '../dataprocess')
+# from pretrained_label_functions import *
+from prepare_dataset import prepare_data_for_model
 
-lf_models=[lf_model_svm_linear, lf_model_svm_poly,
-    lf_model_svm_rbf, lf_model_svm_sigmoid, lf_model_rfc]
-# models_dict = {
-#     "1": lf_model_svm_ade_only_linear}
-
-models_dict_desc = {
-    "0": "No Models Selected",
-    "1": "ADE-Only Prediction using Linear SVM",
-    "2": "ADE-Only Prediction using Polynomial SVM",
-    "3": "ADE-Only Prediction using Sigmoid SVM",
-    "4": "ADE-Only Prediction using RBF SVM",
-}
+from arg_parser import get_lfdict_and_parser
 
 
-'''
-    create folder for output
-'''
-def create_output_folder():
-    # log_df=pd.DataFrame({log_df_title:[]})
 
-    # if not Path(join(output_folder,"log.csv")).exists():
-    #     append_csv_bydf(log_df_title,join(output_folder,"log.csv",sep=","))
-    date = datetime.now().strftime("%Y%m%d-%I%M%S%p")
-    folder_name=f"result_{date}"
-    create_folder(join(output_folder,folder_name))
-    return folder_name
+def get_selected_lf_list():
+    index_lfname_dict, parser = get_lfdict_and_parser()
+    args = parser.parse_args()
+    index_list = list(map(lambda s: s.strip(),args.label_function.split(',')))
+    lfname_list = [index_lfname_dict[id] for id in index_list]
+
+    lfname_lf_dict = get_model_lfs()
+    print('selected label functions:')
+    for index, lfname in zip(index_list, lfname_list):
+        print(f'--{index}: {lfname}')
+    lf_list = [lfname_lf_dict[lfname] for lfname in lfname_list]
+    return lf_list
 
 
-data_path = "../N2C2"
+
+
+
+
 def main():
 
-    # result_folder_path=join(output_folder,create_output_folder())
+    lf_list = get_selected_lf_list()
+    quit()
+    # TODO: SAVE TRAINING LOG
 
-    ## TODO:save args configuration 
-    # print('Save settings of arguments into file %s'%join(result_folder_path, 'args_info.csv'))
-    # info = pd.DataFrame({'models': [args.models], 'rules': [args.rules]})
-    # info.to_csv(join(result_folder_path, 'args_info.csv'), index=False)
-
-
-    print("models selected:")
-    model_list = [
-        # lf_models[0],
-        # lf_models[1],
-        # lf_models[2],
-        lf_models[4]
-    ]
-    for lf in model_list:
-        print(f"model {lf.name} is selected")
-        lfs.append(lf)
-    # models_list = args.models.split(",")s
-
-    # FIXME:
-
-    print("\n")
-    print("rules selected:")
-    # get rules #
-    # rules_list = args.rules.split(",")
-    rules_list = [
-        '3',
-        '8',
-        '12']
-    for i in range(0, len(rules_list)) :
-        print(rules_list[i], ":", rules_dict_desc[rules_list[i]])
-        if rules_list[i] != "0" :
-            lfs.append(rules_dict[rules_list[i]])
-
-    trainData, testData = prepare_data_for_model(True) # get data for training models
+    # trainData, testData = prepare_data_for_model(True) # get data for training models
 
 
     '''

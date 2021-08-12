@@ -17,8 +17,8 @@ from nltk.stem.snowball import SnowballStemmer
 import sys
 sys.path.insert(1,'../utils')
 from utils import *
+from sub_path import data_path
 
-data_path='../N2C2'
 stop_words = set(stopwords.words('english'))
 stop_words.update(['zero','one','two','three','four','five','six','seven','eight','nine','ten','may','also','across','among','beside','however','yet','within'])
 re_stop_words = re.compile(r"\b(" + "|".join(stop_words) + ")\\W", re.I)

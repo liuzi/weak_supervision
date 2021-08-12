@@ -150,7 +150,7 @@ def grid_tune(grid_params, narrowed_grid_params, grid_search_params,model, model
 
 from model_params import rfc_grid, narrowed_rfc_grid, svm_grid,  narrowd_svm_grid,tune_search_params
 from utils import get_metric_funcs_list
-data_path = "../N2C2"
+from sub_path import data_path
 train_labels, test_labels, tfidf_train_data, tfidf_test_data = [None]*4
 funcs, metrics_names = get_metric_funcs_list()
 
