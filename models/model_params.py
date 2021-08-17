@@ -74,7 +74,7 @@ narrowd_svm_grid = {
 tune_search_params = {
     'cv': 5,
     'verbose': 2,
-    'random_state': 1,
+    # 'random_state': 1,
     'n_jobs': -1,
-    'n_iter': 30
+    # 'n_iter': 30
 }

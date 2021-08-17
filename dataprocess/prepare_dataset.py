@@ -7,10 +7,10 @@ import pickle
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.pipeline import make_pipeline
-import nltk
-from nltk.stem import WordNetLemmatizer 
-from nltk.stem import PorterStemmer
-from nltk.stem import LancasterStemmer
+# import nltk
+# from nltk.stem import WordNetLemmatizer 
+# from nltk.stem import PorterStemmer
+# from nltk.stem import LancasterStemmer
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 
@@ -109,7 +109,32 @@ def prepare_dataset(train_labelled_dict, test_labelled_dict, \
         
     return data_df_l    
 
-def prepare_data_for_model(get_full_data=False):
+def tf_idf_trasform(trainData, testData, pipeline_name = '../dataprocess/feature_extraction_pipeline.pkl'):
+    '''
+        transform traindata and testdata for model: Feature Extraction from text
+    '''
+    # pipeline_name = 'feature_extraction_pipeline.pkl'
+    if(not os.path.exists(pipeline_name)):
+        feature_extraction_pipe = make_pipeline(
+            CountVectorizer(binary=True),
+            TfidfTransformer(use_idf=True),
+        )
+        tfidf_train_data = feature_extraction_pipe.fit_transform(trainData.summary) 
+        tfidf_test_data = feature_extraction_pipe.transform(testData.summary)
+        # save pipeline as pickle file
+        with open(pipeline_name, 'wb') as file :
+            pickle.dump(feature_extraction_pipe, file)
+        print("pipeline for feature extraction from text is created")
+    else:
+        with open(pipeline_name, 'rb') as file:
+            feature_extraction_pipe = pickle.load(file)
+        tfidf_train_data, tfidf_test_data = list(
+            map(feature_extraction_pipe.transform, [trainData.summary, testData.summary]))
+
+    # train_labels, test_labels = trainData.label, testData.label
+    return tfidf_train_data, tfidf_test_data, trainData.label, testData.label
+
+def prepare_data_for_model(get_full_data=False,  pipeline_name = '../dataprocess/feature_extraction_pipeline.pkl'):
     '''
         prepare training data and test data
     '''
@@ -138,31 +163,44 @@ def prepare_data_for_model(get_full_data=False):
         cleaned_Data_l.append(Data)
     trainData, testData = cleaned_Data_l
 
+    ## if only need the original data then directly return trainData testData
     if get_full_data:
         return trainData, testData
-    '''
-        transform traindata and testdata for model: Feature Extraction from text
-    '''
-    pipeline_name = 'feature_extraction_pipeline.pkl'
-    if(not os.path.exists(pipeline_name)):
-        feature_extraction_pipe = make_pipeline(
-            CountVectorizer(binary=True),
-            TfidfTransformer(use_idf=True),
-        )
-        tfidf_train_data = feature_extraction_pipe.fit_transform(trainData.summary) 
-        tfidf_test_data = feature_extraction_pipe.transform(testData.summary)
-        # save pipeline as pickle file
-        with open(pipeline_name, 'wb') as file :
-            pickle.dump(feature_extraction_pipe, file)
-        print("pipeline for feature extraction from text is created")
     else:
-        with open(pipeline_name, 'rb') as file:
-            feature_extraction_pipe = pickle.load(file)
-        tfidf_train_data, tfidf_test_data = list(
-            map(feature_extraction_pipe.transform, [trainData.summary, testData.summary]))
+        return tf_idf_trasform(trainData, testData,pipeline_name)
 
-    # train_labels, test_labels = trainData.label, testData.label
-    return tfidf_train_data, tfidf_test_data, trainData.label, testData.label
+
+from sklearn.model_selection import StratifiedKFold    
+def get_data_for_cross_fold_test(n_splits=5):
+    pipeline_prefix='../dataprocess/cv%d_feature_extraction_pipeline.pkl'
+    trainData, testData = prepare_data_for_model(True)
+    allData=pd.concat([trainData, testData],axis=0)
+    scv=StratifiedKFold(n_splits, random_state=42, shuffle=True)
+
+    X=allData['summary'].copy()
+    y=allData['label'].copy()
+    data_dict={}
+    for (train_index, test_index), dict_id in zip(scv.split(X, y), list(range(n_splits))):
+        train_data=pd.DataFrame({'summary':X.iloc[train_index],'label':y.iloc[train_index]})
+        test_data=pd.DataFrame({'summary':X.iloc[test_index],'label':y.iloc[test_index]})
+
+        pipeline_name=pipeline_prefix%dict_id
+        tfidf_pack=tf_idf_trasform(train_data, test_data,pipeline_name)
+        
+        current_dataset={'train':train_data,'test':test_data,'tf_idf':tfidf_pack}
+        data_dict['cv%d'%dict_id]=current_dataset
+        # data_dictprint(dict_id)
+    
+    return data_dict
+    # for train_index, test_index, dict_id in zip(scv.split(allData),:
+    #     train_data_list.append(allData[train_index])
+    #     test_data_list.append(allData[test_index])
+    #     # X_train, X_test= X[train_index], X[test_index]
+	#     # y_train, y_test= y[train_index], y[test_index]
+    # print(train_data_list[0], train_data_list[1])
+    # print(test_data_list[0],test_data_list[1])
+
+
 
 
 

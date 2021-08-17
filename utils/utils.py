@@ -11,8 +11,8 @@ def get_metric_funcs_list():
         metrics.confusion_matrix]
     
     metrics_names=[
-        "accuracy", "precision", "recall", 
-        "ROC AUC", "f1 score", "confusion matrix\n"
+        "Accuracy", "Precision", "Recall", 
+        "ROC AUC", "F1 Score", "Confusion Matrix(TN,FN,FP,TP)\n"
     ]
     return funcs, metrics_names
 

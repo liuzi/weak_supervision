@@ -7,6 +7,16 @@ sys.path.insert(1, '../utils')
 from sub_path import labelfunction_dict_dir
 
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 '''
     Get dict of index and labelfunction names from folder scripts/lf_dict
 '''
@@ -25,6 +35,10 @@ def get_lfdict_and_parser():
     parser = argparse.ArgumentParser(description='', \
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('label_function', type=str, help=help)
+    # parser.add_argument('refresh_lf_dict', type=str2bool, \
+    #     help="\n\tboolean value for whether to refresh list of all label functions"+
+    #     "\n\tTrue: 'yes', 'true', 't', 'y', '1'"+
+    #     "\n\tFalse: 'no', 'false', 'f', 'n', '0'")
 
     return lf_dict_desc, parser
 
