@@ -27,10 +27,20 @@ def model(data=None, args=None, batch_size=123):
     # Globals.
     with pyro.plate("topics", args.num_topics):
         topic_weights = pyro.sample("topic_weights", dist.Gamma(1. / args.num_topics, 1.))
+<<<<<<< HEAD
         topic_words = pyro.sample("topic_words",
                                   dist.Dirichlet(torch.ones(args.num_words) / args.num_words))
     assert topic_weights.shape==(args.num_topics,)
     assert topic_words.shape==(args.num_topics, args.num_words)
+=======
+        # topic_words = pyro.sample("topic_words",
+        #                           dist.Dirichlet(torch.ones(args.num_words) / args.num_words))
+        topic_words = pyro.sample("topic_words", dist.Beta(torch.tensor([0.5]),torch.tensor([0.5])))
+    assert topic_weights.shape==(args.num_topics,)
+    assert topic_words.shape==(args.num_topics,)
+    # quit()
+    # assert topic_words.shape==(args.num_topics, args.num_words)
+>>>>>>> pyro_alda
     # print(topic_words)
     # quit()
 
@@ -45,8 +55,14 @@ def model(data=None, args=None, batch_size=123):
             # quit()
             # assert data.shape==(args.num_words_per_doc,args.batch_size)
         doc_topics = pyro.sample("doc_topics", dist.Dirichlet(topic_weights))
+<<<<<<< HEAD
         print(doc_topics)
         assert doc_topics.shape==(ind.size(0),args.num_topics)
+=======
+        print(f'doc topic prior {doc_topics}')
+        print(f'ind size 0 {ind.size(0)}')
+        assert doc_topics.shape==(args.num_docs, args.num_topics)
+>>>>>>> pyro_alda
         # print("haha")
         # print(ind.size())
         with pyro.plate("words", args.num_words_per_doc):
@@ -56,6 +72,7 @@ def model(data=None, args=None, batch_size=123):
             # the guide.
             word_topics = pyro.sample("word_topics", dist.Categorical(doc_topics),
                                       infer={"enumerate": "parallel"})
+<<<<<<< HEAD
             print(word_topics)
             print(word_topics.shape)
             quit()
@@ -64,11 +81,27 @@ def model(data=None, args=None, batch_size=123):
             data = pyro.sample("doc_words", dist.Categorical(topic_words[word_topics]),
                                obs=data)
             # assert data.shape==(args.num_words_per_doc,ind.size(0))
+=======
+            print(f'word topic {word_topics}')
+            print(word_topics.shape)
+            # quit()
+            # assert word_topics.shape==(args.num_words,args.num_docs)
+            assert word_topics.shape==(args.num_words_per_doc,args.num_docs)
+
+            # quit()
+            # data = pyro.sample("doc_words", dist.Categorical(topic_words[word_topics]),
+            #                    obs=data)
+            data = pyro.sample("doc_words", dist.Bernoulli(topic_words[word_topics]),
+                    obs=data)
+            # assert data.shape==(args.num_words_per_doc,ind.size(0))
+            assert data.shape==(args.num_words_per_doc,args.num_docs)
+>>>>>>> pyro_alda
 
 
     return topic_weights, topic_words, data
 
 
+<<<<<<< HEAD
     with pyro.plate("documents", args.num_docs) as ind:
         if data is not None:
             with pyro.util.ignore_jit_warnings():
@@ -95,6 +128,34 @@ def model(data=None, args=None, batch_size=123):
                     obs=data)
 
     return topic_weights, topic_words, data
+=======
+    # with pyro.plate("documents", args.num_docs) as ind:
+    #     if data is not None:
+    #         with pyro.util.ignore_jit_warnings():
+    #             assert data.shape == (args.num_words_per_doc, args.num_docs)
+    #         data = data[:, ind]
+    #     doc_topics = pyro.sample("doc_topics", dist.Dirichlet(topic_weights))
+    #     with pyro.plate("words", args.num_words_per_doc):
+    #         # The word_topics variable is marginalized out during inference,
+    #         # achieved by specifying infer={"enumerate": "parallel"} and using
+    #         # TraceEnum_ELBO for inference. Thus we can ignore this variable in
+    #         # the guide.
+    #         word_topics = pyro.sample("word_topics", dist.Categorical(doc_topics),
+    #                                   infer={"enumerate": "parallel"})
+    #         ## word_topics (num_words=64, num_docs=1000)
+    #         # print(word_topics)
+
+    #         # NOTE: catogorical likelihood
+    #         # data = pyro.sample("doc_words", dist.Categorical(topic_words[word_topics]),
+    #                         #    obs=data)
+    #         # NOTE: bernoulli likelihood
+    #         word_indexes=torch.arange(0,args.num_words_per_doc).unsqueeze(1).repeat(1, args.num_docs)
+    #         # print(topic_words[word_indexes, word_topics])
+    #         data = pyro.sample("doc_words", dist.Bernoulli(topic_words[word_indexes, word_topics]),
+    #                 obs=data)
+
+    # return topic_weights, topic_words, data
+>>>>>>> pyro_alda
 
 
 # # This is a fully generative model of a batch of documents.
