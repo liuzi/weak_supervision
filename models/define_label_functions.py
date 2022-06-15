@@ -25,7 +25,7 @@ from os.path import join
 def lf_model(input_data, model_type, tune_state, \
     feature_extraction_model_path= "../dataprocess/feature_extraction_pipeline.pkl"):
 
-    model_path = join(f'../models/svm_pickles',f'{model_type}_{tune_state}.pkl'
+    model_path = join(f'../models/{model_type}_pickles',f'{model_type}_{tune_state}.pkl')
     # model_path = join(f'../models/{model_type}_pickles',f'{model_type}_{tune_state}.pkl')
     with open(feature_extraction_model_path, 'rb') as file:
         fe = pickle.load(file)
@@ -110,3 +110,41 @@ def change_trigger_pair_withWindow_lf(args):
         f=check_trigger_pair_withWindow,
         resources=dict(**args)
     )
+
+from snorkel.preprocess import preprocessor
+from textblob import TextBlob
+@preprocessor(memoize=True)
+def textblob_sentiment(input):
+    scores = TextBlob(input.summary)
+    input.polarity = scores.sentiment.polarity
+    input.subjectivity = scores.sentiment.subjectivity
+    return input
+
+@labeling_function(pre=[textblob_sentiment])
+def textblob_polarity(input):
+
+    with open('polarity_score.tsv', 'a+') as f:
+        f.write(f"{input.label}, {input.polarity}\n")
+    return 0 if input.polarity < 0.2 else -1
+
+@labeling_function(pre=[textblob_sentiment])
+def textblob_subjectivity(input):
+    with open('subjectivity_score.tsv', 'a+') as f:
+        f.write(f"{input.label}, {input.subjectivity}\n")
+    return 0 if input.subjectivity < 0.33 else -1
+
+
+
+from data_path import joint_lda_result_path, clamp_n2c2_prefix
+sys.path.insert(1, '../clamp')
+from import_clamp_result import get_df_list, getdrug, getdisease
+@labeling_function()
+def top_drug_disease_same_topic_lf(input):
+    patient=input.patient
+    clamp_df=get_df_list(join(clamp_n2c2_prefix,'%s.txt'%patient))
+    # drug_df=getdrug(clamp_df,True).groupby()
+    disease_df=getdisease(clamp_df,True)
+    print(clamp_df)
+    # print(drug_df)
+    print(disease_df)
+    quit()

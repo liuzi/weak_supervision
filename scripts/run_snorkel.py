@@ -135,15 +135,14 @@ def run_snorkel_LF(lf_list, trainData, testData, logged=False):
     #     test_data_list.append(allData[test_index])
     #     # X_train, X_test= X[train_index], X[test_index]
 	#     # y_train, y_test= y[train_index], y[test_index]
-    # print(train_data_list[0], train_data_list[1])
     # print(test_data_list[0],test_data_list[1])
 
 def main():
 
-    lf_list = get_selected_lf_list(rearchive=False)
+    lf_list = get_selected_lf_list(rearchive=True)
     # TODO: SAVE TRAINING LOG
-    # trainData, testData = prepare_data_for_model(True) # get data for training models
-    # run_snorkel_LF(lf_list, trainData, testData,logged=True)
+    trainData, testData = prepare_data_for_model(True) # get data for training models
+    run_snorkel_LF(lf_list, trainData, testData,logged=True)
     # cross_fold_test(trainData,testData)
     '''
         contain num_splits of keys and values
@@ -154,8 +153,8 @@ def main():
     # data_dict=get_data_for_cross_fold_test(5)
     #
     #  train_model_Kfold(data_dict)  ## train models for loading pickles if pickle files are not created
-    cv_results=pd.read_csv('../models/term_output/cv_results.csv')
-    print(cv_results.mean(axis=0))
+    # cv_results=pd.read_csv('../models/term_output/cv_results.csv')
+    # print(cv_results.mean(axis=0))
     # print(data_dict['cv0']['train'])
 
 

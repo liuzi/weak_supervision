@@ -1,5 +1,6 @@
 import os
 import subprocess
+from typing import Pattern
 import pandas as pd
 import numpy as np
 from os.path import join
@@ -14,7 +15,7 @@ sys.path.insert(0, "../utils")
 from data_path import n2c2_data_prefix
 from tools import create_folder, write2file, create_folder_overwrite
 
-from define_label_functions import make_classifier_kernel_lf, change_keyword_lf, change_trigger_pair_withWindow_lf
+from define_label_functions import make_classifier_kernel_lf, change_keyword_lf, change_trigger_pair_withWindow_lf,top_drug_disease_same_topic_lf, textblob_subjectivity, textblob_polarity
 # from prepare_dataset import prepare_data_for_model
 
 # MATCHING = 1
@@ -30,7 +31,7 @@ from define_label_functions import make_classifier_kernel_lf, change_keyword_lf,
 #     print(row)
 
 
-from sub_path import labelfunction_dict_dir, classifier_lf_file, rule_lf_file, lf_cols
+from sub_path import labelfunction_dict_dir, classifier_lf_file, rule_lf_file, pattern_lf_file,lf_cols
 def archive_lfs(lfs,lf_file,index_prefix=''):
     lfs_names = [lf.name for lf in lfs]
     lf_df = pd.DataFrame(
@@ -78,10 +79,17 @@ def get_rule_lfs():
         archive_lfs(rule_lfs,rule_lf_file,'r')
     return dict(zip(list(map(lambda x: x.name ,rule_lfs)) ,rule_lfs))
 
+def get_pattern_lfs():
+    pattern_lfs=[top_drug_disease_same_topic_lf,textblob_subjectivity,textblob_polarity]
+    if(not os.path.exists(os.path.join(labelfunction_dict_dir,pattern_lf_file))):
+        archive_lfs(pattern_lfs,pattern_lf_file,'p')
+    return dict(zip(list(map(lambda x: x.name ,pattern_lfs)) ,pattern_lfs))
+
+
 def get_all_lfs(rearchive=False):
     if rearchive:
         create_folder_overwrite(labelfunction_dict_dir)
     c_lfs=get_classifier_lfs()
     r_lfs=get_rule_lfs()
-    return {**c_lfs, **r_lfs}
+    return {**c_lfs, **r_lfs,**(get_pattern_lfs())}
 

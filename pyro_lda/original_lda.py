@@ -97,7 +97,7 @@ def make_predictor(args):
     return nn.Sequential(*layers)
 
 
-def parametrized_guide(predictor, data, args, batch_size=None):
+def parametrized_guide(predictor, data, args, batch_size=None, print_args=False):
     # Use a conjugate guide for global variables.
     topic_weights_posterior = pyro.param(
             "topic_weights_posterior",
@@ -111,7 +111,7 @@ def parametrized_guide(predictor, data, args, batch_size=None):
     assert topic_words_posterior.shape==(args.num_topics,args.num_words)
     with pyro.plate("topics", args.num_topics):
         pyro.sample("topic_weights", dist.Gamma(topic_weights_posterior, 1.))
-        pyro.sample("topic_words", dist.Dirichlet(topic_words_posterior))
+        topic_words= pyro.sample("topic_words", dist.Dirichlet(topic_words_posterior))
 
     # Use an amortized guide for local variables.
     pyro.module("predictor", predictor)
@@ -130,6 +130,23 @@ def parametrized_guide(predictor, data, args, batch_size=None):
         doc_topics = predictor(counts.transpose(0, 1))
         # assert doc_topics.shape==(ind.size(0),args.num_topics)
         pyro.sample("doc_topics", dist.Delta(doc_topics, event_dim=1))
+
+
+    if(print_args):
+        print("shape of final θ: ")
+        print(doc_topics.shape)
+        print(doc_topics)
+        # print("sum of row:")
+        # print(doc_topics.sum(axis=1))
+        # print("sum of column: ")
+        # print(doc_topics.sum(axis=0))
+        print("shape of final φ: ")
+        print(topic_words)
+        print(topic_words.shape)
+        # print("sum of row:")
+        # print(topic_words.sum(axis=1))
+        # print("sum of column: ")
+        # print(topic_words.sum(axis=0))
 
 
 def main(args):
@@ -154,12 +171,13 @@ def main(args):
         loss = svi.step(data, args=args, batch_size=args.batch_size)
         if step % 10 == 0:
             logging.info('{: >5d}\t{}'.format(step, loss))
+    guide = functools.partial(guide,  print_args=True)
     loss = elbo.loss(model, guide, data, args=args)
     logging.info('final loss = {}'.format(loss))
 
 
 if __name__ == '__main__':
-    assert pyro.__version__.startswith('1.5.2')
+    assert pyro.__version__.startswith('1.7.0')
     parser = argparse.ArgumentParser(description="Amortized Latent Dirichlet Allocation")
     parser.add_argument("-t", "--num-topics", default=8, type=int)
     parser.add_argument("-w", "--num-words", default=1024, type=int)
