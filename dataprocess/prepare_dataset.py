@@ -8,7 +8,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.pipeline import make_pipeline
 # import nltk
-# from nltk.stem import WordNetLemmatizer 
+## solve Resource stopwords not found. problem
+# nltk.download('stopwords')
+# from nltk.stem import WordNetLemmatizer  
 # from nltk.stem import PorterStemmer
 # from nltk.stem import LancasterStemmer
 from nltk.corpus import stopwords
@@ -23,6 +25,8 @@ stop_words = set(stopwords.words('english'))
 stop_words.update(['zero','one','two','three','four','five','six','seven','eight','nine','ten','may','also','across','among','beside','however','yet','within'])
 re_stop_words = re.compile(r"\b(" + "|".join(stop_words) + ")\\W", re.I)
 stemmer = SnowballStemmer("english")
+
+
 
 def cleanHtml(sentence):
     cleanr = re.compile('<.*?>')

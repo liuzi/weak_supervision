@@ -30,8 +30,12 @@ def model(data=None, args=None, batch_size=123):
         # topic_words = pyro.sample("topic_words",
         #                           dist.Dirichlet(torch.ones(args.num_words) / args.num_words))
         topic_words = pyro.sample("topic_words", dist.Beta(torch.tensor([0.5]),torch.tensor([0.5])))
+        # with pyro.plate("words", args.num_words_per_doc):
+            # topic_words = pyro.sample("topic_words", dist.Beta(torch.tensor([0.5]),torch.tensor([0.5])))
     assert topic_weights.shape==(args.num_topics,)
-    assert topic_words.shape==(args.num_topics,)
+    # assert topic_words.shape==(args.num_topics,)
+    print(topic_words.shape)
+    # quit()
     # quit()
     # assert topic_words.shape==(args.num_topics, args.num_words)
     # print(topic_words)
@@ -48,6 +52,7 @@ def model(data=None, args=None, batch_size=123):
             # quit()
             # assert data.shape==(args.num_words_per_doc,args.batch_size)
         doc_topics = pyro.sample("doc_topics", dist.Dirichlet(topic_weights))
+        print(doc_topics.shape)
         print(f'doc topic prior {doc_topics}')
         print(f'ind size 0 {ind.size(0)}')
         assert doc_topics.shape==(args.num_docs, args.num_topics)
@@ -174,6 +179,7 @@ def parametrized_guide(predictor, data, args, batch_size=None, print_args=False)
             "topic_weights_posterior",
             lambda: torch.ones(args.num_topics),
             constraint=constraints.positive)
+    assert topic_weights_posterior.shape==(args.num_topics,)
     # print("shape of topic weights")
     # print(topic_weights_posterior.shape)
     # NOTE: categorical prior
@@ -212,7 +218,7 @@ def parametrized_guide(predictor, data, args, batch_size=None, print_args=False)
         # The neural network will operate on histograms rather than word
         # index vectors, so we'll convert the raw data to a histogram.
         counts = (torch.zeros(args.num_words, ind.size(0))
-                       .scatter_add(0, data, torch.ones(data.shape)))
+                       .scatter_add(0, int(data), torch.ones(data.shape)))
         doc_topics = predictor(counts.transpose(0, 1))
         pyro.sample("doc_topics", dist.Delta(doc_topics, event_dim=1))
     if(print_args):
@@ -247,7 +253,7 @@ def main(args):
     print(true_topic_weights.shape)
     print("\nshape of prior φ:")
     print(true_topic_words.shape)
-    quit()
+    # quit()
 
     # We'll train using SVI.
     logging.info('-' * 40)

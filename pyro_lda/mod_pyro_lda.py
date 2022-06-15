@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 import numpy as np
 from os.path import join
-from utils._tools import read_data
+# from utils._tools import read_data
 
 import torch
 from torch import nn
@@ -152,11 +152,11 @@ def main(args):
     pyro.clear_param_store()
     pyro.enable_validation(__debug__)
 
-    rawdata =torch.tensor(read_data(
-        "/data/liu/mimic3/CLAMP_NER/single_drug_analysis/FEATURE/PRE_PROCESS/pres_rxnorm_matrix.csv").\
-            set_index("HADM_ID").values.T, dtype=torch.int64)
+    # rawdata =torch.tensor(read_data(
+    #     "/data/liu/mimic3/CLAMP_NER/single_drug_analysis/FEATURE/PRE_PROCESS/pres_rxnorm_matrix.csv").\
+    #         set_index("HADM_ID").values.T, dtype=torch.int64)
     # print(list(filter(lambda x: x<2, data.sum(axis=0))))
-    # rawdata=None
+    rawdata=None
     # data.sum(axis=0)
     # quit()
     true_topic_weights, true_topic_words, data = model(args=args,data=rawdata)
@@ -199,7 +199,7 @@ def main(args):
 if __name__ == '__main__':
     
 
-    assert pyro.__version__.startswith('1.6.0')
+    assert pyro.__version__.startswith('1.7.0')
     parser = argparse.ArgumentParser(description="Amortized Latent Dirichlet Allocation")
     parser.add_argument("-t", "--num-topics", default=8, type=int)
     parser.add_argument("-w", "--num-words", default=1624, type=int)

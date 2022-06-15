@@ -1,0 +1,20 @@
+lf_dict already exists. Clear and re-create this folder.
+selected label functions:
+--p1: top_drug_disease_same_topic_lf
+--c1: lf_classifier_svm_Base
+--c2: lf_classifier_svm_Grid_Tuned
+started preparing train and test datasets for training models
+               0     1  ...                  7                               8
+0    NamedEntity   165  ...               None                            None
+1    NamedEntity   229  ...  conceptProb=0.939                      ne=Seizure
+2    NamedEntity   241  ...  conceptProb=0.877                    ne=intubated
+3    NamedEntity   290  ...  conceptProb=0.995      ne=Endotracheal intubation
+4    NamedEntity   369  ...    conceptProb=1.0  ne=cervical spinal cord injury
+..           ...   ...  ...                ...                             ...
+895     Relation  2261  ...   semantic=valueOf                            None
+896     Relation  5577  ...   semantic=valueOf                            None
+897     Relation  5453  ...   semantic=valueOf                            None
+898     Relation  5334  ...   semantic=valueOf                            None
+899     Relation  5536  ...   semantic=valueOf                            None
+
+[900 rows x 9 columns]
